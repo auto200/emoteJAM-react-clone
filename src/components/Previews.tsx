@@ -44,12 +44,14 @@ const Previews: React.FC<Props> = ({
             flexDirection="column"
             textAlign="center"
             m="15px"
-            padding="10px"
-            outline={currentFilterName === name ? "2px solid #0f0" : ""}
+            p="20px"
+            pt="5px"
+            outline={currentFilterName === name ? "4px solid" : "1px solid"}
+            outlineColor={currentFilterName === name ? "gray.100" : "gray.700"}
             onClick={() => onClick(name)}
             _hover={{ cursor: "pointer" }}
           >
-            <Text>{name}</Text>
+            <Text mt="0">{name}</Text>
             <Preview
               filter={filter}
               vertexAttribs={vertexAttribs}

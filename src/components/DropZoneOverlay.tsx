@@ -2,9 +2,9 @@ import { Flex, Heading } from "@chakra-ui/layout";
 import { useEffect, useState } from "react";
 
 interface Props {
-  setFile: (file: File) => void;
+  handleFileDrop: (e: DragEvent) => void;
 }
-const DropZoneOverlay: React.FC<Props> = ({ setFile }) => {
+const DropZoneOverlay: React.FC<Props> = ({ handleFileDrop }) => {
   const [show, setShow] = useState<boolean>(false);
 
   useEffect(() => {
@@ -39,10 +39,7 @@ const DropZoneOverlay: React.FC<Props> = ({ setFile }) => {
       e.preventDefault();
       e.stopPropagation();
 
-      if (e?.dataTransfer?.files.length) {
-        setFile(e.dataTransfer.files[0]);
-        console.log(e.dataTransfer.files);
-      }
+      handleFileDrop(e);
 
       dragCounter = 0;
       setShow(false);

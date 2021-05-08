@@ -6,11 +6,12 @@ import {
   Link,
   Heading,
   Divider,
+  Text,
 } from "@chakra-ui/react";
-import { useEffect, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import DropZoneOverlay from "../components/DropZoneOverlay";
 import Previews from "../components/Previews";
-import { TRIANGLE_PAIR, TRIANGLE_VERTICIES } from "../constants";
+import { IMAGE_SIZE, TRIANGLE_PAIR, TRIANGLE_VERTICIES } from "../constants";
 import filters from "../filters";
 import { DownloadIcon } from "@chakra-ui/icons";
 
@@ -181,6 +182,20 @@ const Index = () => {
     });
   };
 
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e?.target.files?.[0];
+    if (!file) return;
+    setState("idle");
+    setUploadedImageSrc(URL.createObjectURL(file));
+  };
+
+  const handleFileDrop = (e: DragEvent) => {
+    const file = e?.dataTransfer?.files?.[0];
+    if (!file) return;
+    setState("idle");
+    setUploadedImageSrc(URL.createObjectURL(file));
+  };
+
   return (
     <Flex
       maxW="800px"
@@ -195,12 +210,7 @@ const Index = () => {
         webGlError
       ) : (
         <>
-          <DropZoneOverlay
-            setFile={(file) => {
-              setState("idle");
-              setUploadedImageSrc(URL.createObjectURL(file));
-            }}
-          />
+          <DropZoneOverlay handleFileDrop={handleFileDrop} />
           <Heading m="10px">Upload an image to animate</Heading>
           <Flex
             w="90%"
@@ -220,18 +230,19 @@ const Index = () => {
               ref={fileInputRef}
               style={{ display: "none" }}
               type="file"
-              onChange={() => {
-                if (!fileInputRef.current) return;
-                setState("idle");
-                setUploadedImageSrc(
-                  URL.createObjectURL(fileInputRef.current.files?.[0])
-                );
-              }}
+              onChange={handleFileChange}
             />
           </Flex>
           <Heading mt="15px" mb="5px">
             Pick a filter:
           </Heading>
+          <Text>
+            (
+            <Text as="span" color="#0f0">
+              Green
+            </Text>{" "}
+            background will be gone after render)
+          </Text>
           <Previews
             filters={filters}
             currentFilterName={currentFilterName}
@@ -247,8 +258,8 @@ const Index = () => {
           />
           <Divider m="10px" />
           <Flex
-            w="112px"
-            h="112px"
+            w={`${IMAGE_SIZE}px`}
+            h={`${IMAGE_SIZE}px`}
             alignItems="center"
             justifyContent="center"
             flexDirection="column"
