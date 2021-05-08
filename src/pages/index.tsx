@@ -2,17 +2,14 @@ import {
   chakra,
   Box,
   Flex,
-  Select,
   Image,
   Button,
-  Progress,
-  Spinner,
   Link,
-  Text,
   Heading,
+  Divider,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
-import Preview from "../components/Preview";
+import Previews from "../components/Previews";
 import { TRIANGLE_PAIR, TRIANGLE_VERTICIES } from "../constants";
 import filters from "../filters";
 
@@ -29,10 +26,6 @@ export interface Program {
   duration: number;
   transparent: number | null;
 }
-
-const vertexAttribs = {
-  meshPosition: 0,
-};
 
 function removeFileNameExt(fileName: string) {
   if (fileName.includes(".")) {
@@ -107,27 +100,33 @@ const renderGif = (
   return gif;
 };
 
+const vertexAttribs = {
+  meshPosition: 0,
+};
+
 const Index = () => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [gl, setGl] = useState<WebGLRenderingContext>();
+  const [state, setState] = useState<"idle" | "rendering" | "rendered">("idle");
   const [currentFilterName, setCurrentFilterName] = useState<string>(
     () => Object.keys(filters)[0]
   );
   const [webGlError, setWebGlError] = useState<string>("");
-  // const gifRendererRef = useRef<any>();
   const [uploadedImageSrc, setUploadedImageSrc] = useState<string>(
     "/imgs/tsodinClown.png"
   );
-  const uploadedImageRef = useRef<HTMLImageElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  // const [renderProgress, setRenderProgess] = useState<number>(0);
-  // const [renderedImage, setRenderedImage] = useState<{
-  //   name: string;
-  //   src: string;
-  // }>({ name: "", src: "" });
+  const [renderData, setRenderData] = useState<{
+    [key: string]: [WebGLRenderingContext, HTMLCanvasElement, Program];
+  }>({});
+  const [renderedImage, setRenderedImage] = useState<{
+    name: string;
+    src: string;
+  }>({ name: "", src: "" });
+
+  let gifRenderer: any;
 
   useEffect(() => {
-    const gl = canvasRef.current?.getContext("webgl", {
+    const canvas = document.createElement("canvas");
+    const gl = canvas.getContext("webgl", {
       antialias: false,
       alpha: false,
     });
@@ -135,8 +134,52 @@ const Index = () => {
       setWebGlError("Could not initialize WebGL context");
       return;
     }
-    setGl(gl);
   }, []);
+
+  useEffect(() => {
+    if (!uploadedImageSrc) return;
+
+    const image = new window.Image();
+    image.src = uploadedImageSrc;
+
+    image.addEventListener("error", () => {
+      if (!fileInputRef.current) return;
+      fileInputRef.current.value = "";
+      setUploadedImageSrc("/imgs/error.png");
+    });
+  }, [uploadedImageSrc]);
+
+  useEffect(() => {
+    if (state === "idle") {
+      setRenderedImage({
+        name: "",
+        src: "",
+      });
+    }
+  }, [state]);
+
+  const render = () => {
+    if (!renderData[currentFilterName] || !fileInputRef.current) return;
+
+    setState("rendering");
+
+    if (gifRenderer?.running) {
+      gifRenderer.abort();
+    }
+    const file = fileInputRef.current.files?.[0];
+    const filename = file ? removeFileNameExt(file.name) : "result";
+
+    gifRenderer = renderGif(...renderData[currentFilterName]);
+
+    gifRenderer.on("finished", (blob: Blob) => {
+      setRenderedImage({
+        name: `${filename}-${currentFilterName}.gif`,
+        src: URL.createObjectURL(blob),
+      });
+      gifRenderer.abort();
+      setState("rendered");
+    });
+  };
 
   return (
     <Flex
@@ -152,117 +195,68 @@ const Index = () => {
         webGlError
       ) : (
         <>
+          <Heading m="10px">Upload an image to animate</Heading>
           <FileInput
             ref={fileInputRef}
             m="10px"
             type="file"
             onChange={() => {
-              if (!fileInputRef.current || !uploadedImageRef.current) return;
+              if (!fileInputRef.current) return;
+              setState("idle");
               setUploadedImageSrc(
                 URL.createObjectURL(fileInputRef.current.files?.[0])
               );
             }}
           />
-          <Image
-            ref={uploadedImageRef}
-            src={uploadedImageSrc}
+          <Heading mt="15px" mb="5px">
+            Pick a filter:
+          </Heading>
+          <Previews
+            filters={filters}
+            currentFilterName={currentFilterName}
+            setRenderData={setRenderData}
+            onClick={(filterName: string) => {
+              if (state === "rendered") {
+                setState("idle");
+              }
+              setCurrentFilterName(filterName);
+            }}
+            vertexAttribs={vertexAttribs}
+            uploadedImageSrc={uploadedImageSrc}
+          />
+          <Divider m="10px" />
+          <Flex
             w="112px"
             h="112px"
-            onError={() => {
-              if (!fileInputRef.current) return;
-              fileInputRef.current.value = "";
-              setUploadedImageSrc("/imgs/error.png");
-            }}
-          />
-          <Heading mt="15px" mb="5px">
-            Filters:
-          </Heading>
-          <Flex wrap="wrap" justifyContent="center">
-            {Object.entries(filters).map(([name, filter]) => (
-              <Flex
-                key={name}
-                flexDirection="column"
-                textAlign="center"
-                m="15px"
-                padding="10px"
-                outline={currentFilterName === name ? "2px solid red" : ""}
-                onClick={() => setCurrentFilterName(name)}
-                _hover={{ cursor: "pointer" }}
-              >
-                <Text>{name}</Text>
-                <Preview
-                  filter={filter}
-                  vertexAttribs={vertexAttribs}
-                  imageEl={uploadedImageRef.current}
-                />
-              </Flex>
-            ))}
+            alignItems="center"
+            outline={state === "idle" ? "solid 2px red" : ""}
+          >
+            {renderedImage.src ? (
+              <Image src={renderedImage.src} />
+            ) : (
+              <Box>Your rendered image will be here</Box>
+            )}
           </Flex>
-          <canvas
-            ref={canvasRef}
-            width="112px"
-            height="112px"
-            style={{ display: "none" }}
-          />
-          {/* <Progress
-            m="15px"
-            w="100%"
-            hasStripe
-            isAnimated
-            value={renderProgress}
-          /> */}
-          {/* <Button
-            mb="15px"
-            onClick={() => {
-              if (
-                !gl ||
-                !canvasRef.current ||
-                !programRef.current ||
-                !fileInputRef.current
-              )
-                return;
-
-              if (gifRendererRef.current && gifRendererRef.current.running) {
-                gifRendererRef.current.abort();
-              }
-              const file = fileInputRef.current.files?.[0];
-              const filename = file ? removeFileNameExt(file.name) : "result";
-
-              gifRendererRef.current = renderGif(
-                gl,
-                canvasRef.current,
-                programRef.current
-              );
-
-              gifRendererRef.current.on("finished", (blob: Blob) => {
-                setRenderedImage({
-                  name: `${filename}-${currentFilterName}.gif`,
-                  src: URL.createObjectURL(blob),
-                });
-                setRenderProgess(100);
-                gifRendererRef.current.abort();
-              });
-
-              gifRendererRef.current.on("progress", (p: number) => {
-                setRenderProgess(p * 100);
-              });
-            }}
-          >
-            Render
-          </Button> */}
-          {/* <Box>
-            <Spinner size="xl" thickness="10px" />
-            <Image w="112px" h="112px" src={renderedImage.src} />
+          <Box m="15px">
+            {state === "idle" || state === "rendering" ? (
+              <Button
+                isLoading={state === "rendering"}
+                onClick={render}
+                colorScheme="whatsapp"
+              >
+                {state === "idle" ? "Render" : "Rendering"}
+              </Button>
+            ) : (
+              <Button
+                as={Link}
+                href={renderedImage.src}
+                download={renderedImage.name}
+                colorScheme="teal"
+              >
+                Download
+              </Button>
+            )}
           </Box>
-          <Button
-            as={Link}
-            href={renderedImage.src}
-            download={renderedImage.name}
-            disabled={!renderedImage.name}
-            title={!renderedImage.name ? "render gif first" : ""}
-          >
-            Download
-          </Button> */}
         </>
       )}
     </Flex>

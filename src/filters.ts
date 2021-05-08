@@ -5,7 +5,11 @@ export interface Filter {
   fragment: string;
 }
 
-const filters: { [key: string]: Filter } = {
+export interface Filters {
+  [key: string]: Filter;
+}
+
+const filters: Filters = {
   Hop: {
     transparent: 0x00ff00,
     duration: 0.85 * 2,

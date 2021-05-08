@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Filter } from "../filters";
 import { Program, VertexAttribs } from "../pages";
 import {
+  IMAGE_SIZE,
   TRIANGLE_PAIR,
   TRIANGLE_VERTICIES,
   VEC2_COUNT,
@@ -125,36 +126,24 @@ function createTextureFromImage(
 interface Props {
   filter: Filter;
   vertexAttribs: VertexAttribs;
-  imageEl: HTMLImageElement | null;
+  imageSrc: string;
+  setRenderDataInfo: (
+    gl: WebGLRenderingContext,
+    canvas: HTMLCanvasElement,
+    program: Program
+  ) => void;
 }
 
-const Preview: React.FC<Props> = ({ filter, vertexAttribs, imageEl }) => {
+const Preview: React.FC<Props> = ({
+  filter,
+  vertexAttribs,
+  imageSrc,
+  setRenderDataInfo,
+}) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [gl, setGl] = useState<WebGLRenderingContext>();
+  const glRef = useRef<WebGLRenderingContext>();
   const programRef = useRef<Program | null>();
   const emoteTextureRef = useRef<WebGLTexture | null>();
-
-  useEffect(() => {
-    imageEl?.addEventListener("load", () => {
-      if (!gl || !imageEl) return;
-      if (emoteTextureRef.current) {
-        gl.deleteTexture(emoteTextureRef.current);
-      }
-      const newTexture = createTextureFromImage(gl, imageEl);
-      if (newTexture) {
-        emoteTextureRef.current = newTexture;
-      }
-    });
-  });
-
-  useEffect(() => {
-    if (!gl || !programRef.current) return;
-
-    gl.deleteProgram(programRef.current.id);
-
-    const newProgram = loadFilterProgram(gl, filter, vertexAttribs);
-    programRef.current = newProgram;
-  }, [filter]);
 
   useEffect(() => {
     const gl = canvasRef.current?.getContext("webgl", {
@@ -164,7 +153,7 @@ const Preview: React.FC<Props> = ({ filter, vertexAttribs, imageEl }) => {
     if (!gl) {
       return;
     }
-    setGl(gl);
+    glRef.current = gl;
 
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
@@ -229,7 +218,44 @@ const Preview: React.FC<Props> = ({ filter, vertexAttribs, imageEl }) => {
     window.requestAnimationFrame(step);
   }, []);
 
-  return <canvas ref={canvasRef} width="112px" height="112px" />;
+  useEffect(() => {
+    const image = new Image(IMAGE_SIZE, IMAGE_SIZE);
+    image.src = imageSrc;
+
+    image.addEventListener("load", () => {
+      if (!glRef.current) return;
+      if (emoteTextureRef.current) {
+        glRef.current.deleteTexture(emoteTextureRef.current);
+      }
+      const newTexture = createTextureFromImage(glRef.current, image);
+      if (newTexture) {
+        emoteTextureRef.current = newTexture;
+      }
+    });
+  }, [imageSrc]);
+
+  useEffect(() => {
+    if (!glRef.current || !programRef.current) return;
+
+    glRef.current.deleteProgram(programRef.current.id);
+
+    const newProgram = loadFilterProgram(glRef.current, filter, vertexAttribs);
+    programRef.current = newProgram;
+  }, [filter]);
+
+  useEffect(() => {
+    if (glRef.current && canvasRef.current && programRef.current) {
+      setRenderDataInfo(glRef.current, canvasRef.current, programRef.current);
+    }
+  }, [glRef.current, canvasRef.current, programRef.current]);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      width={`${IMAGE_SIZE}px`}
+      height={`${IMAGE_SIZE}px`}
+    />
+  );
 };
 
 export default Preview;
