@@ -238,7 +238,9 @@ const Index = () => {
                 fileInputRef.current?.click();
               }}
               _hover={{ cursor: "pointer" }}
+              pos="relative"
             >
+              <Step step={1} />
               Select or drop an image
               <Box fontSize="3xl">
                 <BsUpload />
@@ -250,16 +252,19 @@ const Index = () => {
                 onChange={handleFileChange}
               />
             </Flex>
-            <Heading mt="15px" mb="5px">
-              Pick a filter:
-            </Heading>
-            <Text>
-              (
-              <Text as="span" color="#0f0">
-                Green
-              </Text>{" "}
-              background will be gone after render)
-            </Text>
+            <Box pos="relative" w="90%">
+              <Step step={2} />
+              <Heading mt="15px" mb="5px">
+                Pick a filter:
+              </Heading>
+              <Text>
+                (
+                <Text as="span" color="#0f0">
+                  Green
+                </Text>{" "}
+                background will be gone after render)
+              </Text>
+            </Box>
             <Previews
               filters={filters}
               currentFilterName={currentFilterName}
@@ -274,22 +279,25 @@ const Index = () => {
               uploadedImageSrc={uploadedImageSrc}
             />
             <Divider m="10px" />
-            <Flex
-              w={`${IMAGE_SIZE}px`}
-              h={`${IMAGE_SIZE}px`}
-              alignItems="center"
-              justifyContent="center"
-              flexDirection="column"
-              outline={state === "idle" ? "solid 2px red" : ""}
-            >
-              {renderedImage.src ? (
-                <Image src={renderedImage.src} />
-              ) : (
-                <>
-                  <Box>Your rendered image will be here</Box>
-                  <Box>👇</Box>
-                </>
-              )}
+            <Flex justifyContent="center" pos="relative" w="90%">
+              <Step step={3} />
+              <Flex
+                w={`${IMAGE_SIZE}px`}
+                h={`${IMAGE_SIZE}px`}
+                alignItems="center"
+                justifyContent="center"
+                flexDirection="column"
+                outline={state === "idle" ? "solid 2px red" : ""}
+              >
+                {renderedImage.src ? (
+                  <Image src={renderedImage.src} />
+                ) : (
+                  <>
+                    <Box>Your rendered image will be here</Box>
+                    <Box>👇</Box>
+                  </>
+                )}
+              </Flex>
             </Flex>
             <Box m="15px" w="140px">
               {state === "idle" || state === "rendering" ? (
@@ -324,3 +332,13 @@ const Index = () => {
 };
 
 export default Index;
+
+const Step = ({ step }: { step: number }) => {
+  return (
+    <Box pos="absolute" top="5px" left="5px">
+      <Text color="lightpink" fontWeight="bold">
+        Step {step}
+      </Text>
+    </Box>
+  );
+};
