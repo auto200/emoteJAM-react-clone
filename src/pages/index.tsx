@@ -1,5 +1,4 @@
 import {
-  chakra,
   Box,
   Flex,
   Image,
@@ -9,11 +8,11 @@ import {
   Divider,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
+import DropZoneOverlay from "../components/DropZoneOverlay";
 import Previews from "../components/Previews";
 import { TRIANGLE_PAIR, TRIANGLE_VERTICIES } from "../constants";
 import filters from "../filters";
-
-const FileInput = chakra("input");
+import { DownloadIcon } from "@chakra-ui/icons";
 
 export interface VertexAttribs {
   [key: string]: number;
@@ -113,7 +112,6 @@ const Index = () => {
   const [uploadedImageSrc, setUploadedImageSrc] = useState<string>(
     "/imgs/tsodinClown.png"
   );
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [renderData, setRenderData] = useState<{
     [key: string]: [WebGLRenderingContext, HTMLCanvasElement, Program];
   }>({});
@@ -121,6 +119,8 @@ const Index = () => {
     name: string;
     src: string;
   }>({ name: "", src: "" });
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   let gifRenderer: any;
 
@@ -195,19 +195,40 @@ const Index = () => {
         webGlError
       ) : (
         <>
-          <Heading m="10px">Upload an image to animate</Heading>
-          <FileInput
-            ref={fileInputRef}
-            m="10px"
-            type="file"
-            onChange={() => {
-              if (!fileInputRef.current) return;
+          <DropZoneOverlay
+            setFile={(file) => {
               setState("idle");
-              setUploadedImageSrc(
-                URL.createObjectURL(fileInputRef.current.files?.[0])
-              );
+              setUploadedImageSrc(URL.createObjectURL(file));
             }}
           />
+          <Heading m="10px">Upload an image to animate</Heading>
+          <Flex
+            w="90%"
+            h="150px"
+            border="5px dashed"
+            borderColor="slategray"
+            textAlign="center"
+            justifyContent="center"
+            alignItems="center"
+            onClick={() => {
+              fileInputRef.current?.click();
+            }}
+            _hover={{ cursor: "pointer" }}
+          >
+            Select or drag an image
+            <input
+              ref={fileInputRef}
+              style={{ display: "none" }}
+              type="file"
+              onChange={() => {
+                if (!fileInputRef.current) return;
+                setState("idle");
+                setUploadedImageSrc(
+                  URL.createObjectURL(fileInputRef.current.files?.[0])
+                );
+              }}
+            />
+          </Flex>
           <Heading mt="15px" mb="5px">
             Pick a filter:
           </Heading>
@@ -229,22 +250,30 @@ const Index = () => {
             w="112px"
             h="112px"
             alignItems="center"
+            justifyContent="center"
+            flexDirection="column"
             outline={state === "idle" ? "solid 2px red" : ""}
           >
             {renderedImage.src ? (
               <Image src={renderedImage.src} />
             ) : (
-              <Box>Your rendered image will be here</Box>
+              <>
+                <Box>Your rendered image will be here</Box>
+                <Box>👇</Box>
+              </>
             )}
           </Flex>
-          <Box m="15px">
+          <Box m="15px" w="140px">
             {state === "idle" || state === "rendering" ? (
               <Button
                 isLoading={state === "rendering"}
+                loadingText="Rendering"
+                spinnerPlacement="end"
                 onClick={render}
-                colorScheme="whatsapp"
+                colorScheme="red"
+                w="full"
               >
-                {state === "idle" ? "Render" : "Rendering"}
+                Render
               </Button>
             ) : (
               <Button
@@ -252,6 +281,8 @@ const Index = () => {
                 href={renderedImage.src}
                 download={renderedImage.name}
                 colorScheme="teal"
+                rightIcon={<DownloadIcon />}
+                w="full"
               >
                 Download
               </Button>
