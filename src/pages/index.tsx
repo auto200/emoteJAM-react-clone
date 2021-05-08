@@ -7,6 +7,7 @@ import {
   Heading,
   Divider,
   Text,
+  useToast,
 } from "@chakra-ui/react";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import DropZoneOverlay from "../components/DropZoneOverlay";
@@ -120,6 +121,7 @@ const Index = () => {
     name: string;
     src: string;
   }>({ name: "", src: "" });
+  const toast = useToast();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -147,6 +149,11 @@ const Index = () => {
       if (!fileInputRef.current) return;
       fileInputRef.current.value = "";
       setUploadedImageSrc("/imgs/error.png");
+      toast({
+        title: "Failed to convert image",
+        status: "error",
+        position: "bottom-left",
+      });
     });
   }, [uploadedImageSrc]);
 
@@ -225,7 +232,7 @@ const Index = () => {
             }}
             _hover={{ cursor: "pointer" }}
           >
-            Select or drag an image
+            Select or drop an image
             <input
               ref={fileInputRef}
               style={{ display: "none" }}
