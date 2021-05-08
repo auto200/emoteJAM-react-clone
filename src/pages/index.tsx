@@ -15,6 +15,10 @@ import Previews from "../components/Previews";
 import { IMAGE_SIZE, TRIANGLE_PAIR, TRIANGLE_VERTICIES } from "../constants";
 import filters from "../filters";
 import { DownloadIcon } from "@chakra-ui/icons";
+import { BsUpload } from "react-icons/bs";
+import GithubLink from "../components/GithubIcon";
+import kekwFavicon from "../kekwFavicon";
+const Favicon = require("react-favicon");
 
 export interface VertexAttribs {
   [key: string]: number;
@@ -204,110 +208,117 @@ const Index = () => {
   };
 
   return (
-    <Flex
-      maxW="800px"
-      m="40px auto"
-      p="0 10px"
-      textAlign="center"
-      justifyContent="center"
-      alignItems="center"
-      flexDir="column"
-    >
-      {webGlError ? (
-        webGlError
-      ) : (
-        <>
-          <DropZoneOverlay handleFileDrop={handleFileDrop} />
-          <Heading m="10px">Upload an image to animate</Heading>
-          <Flex
-            w="90%"
-            h="150px"
-            border="5px dashed"
-            borderColor="slategray"
-            textAlign="center"
-            justifyContent="center"
-            alignItems="center"
-            onClick={() => {
-              fileInputRef.current?.click();
-            }}
-            _hover={{ cursor: "pointer" }}
-          >
-            Select or drop an image
-            <input
-              ref={fileInputRef}
-              style={{ display: "none" }}
-              type="file"
-              onChange={handleFileChange}
+    <Flex justifyContent="center" pb="100px">
+      <Favicon url={kekwFavicon} animate animationDelay={50} />
+      <GithubLink />
+      <Flex
+        maxW="800px"
+        p="0 10px"
+        textAlign="center"
+        justifyContent="center"
+        alignItems="center"
+        flexDir="column"
+      >
+        {webGlError ? (
+          webGlError
+        ) : (
+          <>
+            <DropZoneOverlay handleFileDrop={handleFileDrop} />
+            <Heading my="50px">Upload an image to animate</Heading>
+            <Flex
+              w="90%"
+              h="150px"
+              border="5px dashed"
+              borderColor="slategray"
+              textAlign="center"
+              justifyContent="center"
+              alignItems="center"
+              flexDirection="column"
+              onClick={() => {
+                fileInputRef.current?.click();
+              }}
+              _hover={{ cursor: "pointer" }}
+            >
+              Select or drop an image
+              <Box fontSize="3xl">
+                <BsUpload />
+              </Box>
+              <input
+                ref={fileInputRef}
+                style={{ display: "none" }}
+                type="file"
+                onChange={handleFileChange}
+              />
+            </Flex>
+            <Heading mt="15px" mb="5px">
+              Pick a filter:
+            </Heading>
+            <Text>
+              (
+              <Text as="span" color="#0f0">
+                Green
+              </Text>{" "}
+              background will be gone after render)
+            </Text>
+            <Previews
+              filters={filters}
+              currentFilterName={currentFilterName}
+              setRenderData={setRenderData}
+              onClick={(filterName: string) => {
+                if (state === "rendered") {
+                  setState("idle");
+                }
+                setCurrentFilterName(filterName);
+              }}
+              vertexAttribs={vertexAttribs}
+              uploadedImageSrc={uploadedImageSrc}
             />
-          </Flex>
-          <Heading mt="15px" mb="5px">
-            Pick a filter:
-          </Heading>
-          <Text>
-            (
-            <Text as="span" color="#0f0">
-              Green
-            </Text>{" "}
-            background will be gone after render)
-          </Text>
-          <Previews
-            filters={filters}
-            currentFilterName={currentFilterName}
-            setRenderData={setRenderData}
-            onClick={(filterName: string) => {
-              if (state === "rendered") {
-                setState("idle");
-              }
-              setCurrentFilterName(filterName);
-            }}
-            vertexAttribs={vertexAttribs}
-            uploadedImageSrc={uploadedImageSrc}
-          />
-          <Divider m="10px" />
-          <Flex
-            w={`${IMAGE_SIZE}px`}
-            h={`${IMAGE_SIZE}px`}
-            alignItems="center"
-            justifyContent="center"
-            flexDirection="column"
-            outline={state === "idle" ? "solid 2px red" : ""}
-          >
-            {renderedImage.src ? (
-              <Image src={renderedImage.src} />
-            ) : (
-              <>
-                <Box>Your rendered image will be here</Box>
-                <Box>👇</Box>
-              </>
-            )}
-          </Flex>
-          <Box m="15px" w="140px">
-            {state === "idle" || state === "rendering" ? (
-              <Button
-                isLoading={state === "rendering"}
-                loadingText="Rendering"
-                spinnerPlacement="end"
-                onClick={render}
-                colorScheme="red"
-                w="full"
-              >
-                Render
-              </Button>
-            ) : (
-              <Button
-                as={Link}
-                href={renderedImage.src}
-                download={renderedImage.name}
-                colorScheme="teal"
-                rightIcon={<DownloadIcon />}
-                w="full"
-              >
-                Download
-              </Button>
-            )}
-          </Box>
-        </>
-      )}
+            <Divider m="10px" />
+            <Flex
+              w={`${IMAGE_SIZE}px`}
+              h={`${IMAGE_SIZE}px`}
+              alignItems="center"
+              justifyContent="center"
+              flexDirection="column"
+              outline={state === "idle" ? "solid 2px red" : ""}
+            >
+              {renderedImage.src ? (
+                <Image src={renderedImage.src} />
+              ) : (
+                <>
+                  <Box>Your rendered image will be here</Box>
+                  <Box>👇</Box>
+                </>
+              )}
+            </Flex>
+            <Box m="15px" w="140px">
+              {state === "idle" || state === "rendering" ? (
+                <Button
+                  isLoading={state === "rendering"}
+                  loadingText="Rendering"
+                  spinnerPlacement="end"
+                  onClick={render}
+                  colorScheme="red"
+                  w="full"
+                >
+                  Render
+                </Button>
+              ) : (
+                <Button
+                  as={Link}
+                  href={renderedImage.src}
+                  download={renderedImage.name}
+                  colorScheme="teal"
+                  rightIcon={<DownloadIcon />}
+                  w="full"
+                >
+                  Download
+                </Button>
+              )}
+            </Box>
+          </>
+        )}
+      </Flex>
     </Flex>
   );
 };

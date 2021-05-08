@@ -15,6 +15,7 @@ const DropZoneOverlay: React.FC<Props> = ({ handleFileDrop }) => {
       e.stopPropagation();
 
       dragCounter++;
+      // prevent popping up on text or other page element drag
       if (e?.dataTransfer?.items[0].kind === "file") {
         setShow(true);
       }
