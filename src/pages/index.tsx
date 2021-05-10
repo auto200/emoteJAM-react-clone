@@ -272,9 +272,6 @@ const Index = () => {
               currentFilterName={currentFilterName}
               setRenderData={setRenderData}
               onClick={(filterName: string) => {
-                if (state === "rendered") {
-                  setState("initial");
-                }
                 setCurrentFilterName(filterName);
               }}
               vertexAttribs={vertexAttribs}
