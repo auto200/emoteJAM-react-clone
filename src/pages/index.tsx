@@ -19,6 +19,7 @@ import { DownloadIcon } from "@chakra-ui/icons";
 import { BsUpload } from "react-icons/bs";
 import GithubLink from "../components/GithubIcon";
 import kekwFavicon from "../kekwFavicon";
+import Footer from "../components/Footer";
 const Favicon = require("react-favicon");
 
 export interface VertexAttribs {
@@ -201,7 +202,7 @@ const Index = () => {
   };
 
   return (
-    <Flex justifyContent="center" pb="100px">
+    <Flex justifyContent="center">
       <Favicon url={kekwFavicon} animate animationDelay={50} />
       <GithubLink />
       <Flex
@@ -312,6 +313,7 @@ const Index = () => {
             </Box>
           </>
         )}
+        <Footer />
       </Flex>
     </Flex>
   );
