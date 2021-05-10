@@ -20,92 +20,8 @@ import { BsUpload } from "react-icons/bs";
 import GithubLink from "../components/GithubIcon";
 import kekwFavicon from "../kekwFavicon";
 import Footer from "../components/Footer";
+import { Program } from "../utils/interfaces";
 const Favicon = require("react-favicon");
-
-export interface VertexAttribs {
-  [key: string]: number;
-}
-
-export interface Program {
-  id: WebGLProgram;
-  resolutionUniform: WebGLUniformLocation | null;
-  timeUniform: WebGLUniformLocation | null;
-  duration: number;
-  transparent: number | null;
-}
-
-function removeFileNameExt(fileName: string) {
-  if (fileName.includes(".")) {
-    return fileName.split(".").slice(0, -1).join(".");
-  } else {
-    return fileName;
-  }
-}
-
-const renderGif = (
-  gl: WebGLRenderingContext,
-  canvas: HTMLCanvasElement,
-  program: Program
-) => {
-  //@ts-ignore
-  const gif = new window.GIF({
-    workers: 5,
-    quality: 10,
-    width: canvas.width,
-    height: canvas.height,
-    transparent: program.transparent,
-  });
-
-  const fps = 30;
-  const dt = 1.0 / fps;
-  const duration = program.duration;
-
-  let t = 0.0;
-  while (t <= duration) {
-    gl.uniform1f(program.timeUniform, t);
-    gl.uniform2f(program.resolutionUniform, canvas.width, canvas.height);
-    gl.clearColor(0.0, 1.0, 0.0, 1.0);
-    gl.clear(gl.COLOR_BUFFER_BIT);
-    gl.drawArrays(gl.TRIANGLES, 0, TRIANGLE_PAIR * TRIANGLE_VERTICIES);
-
-    const pixels = new Uint8ClampedArray(4 * canvas.width * canvas.height);
-    gl.readPixels(
-      0,
-      0,
-      canvas.width,
-      canvas.height,
-      gl.RGBA,
-      gl.UNSIGNED_BYTE,
-      pixels
-    );
-    // Flip the image vertically
-    {
-      const center = Math.floor(canvas.height / 2);
-      for (let y = 0; y < center; ++y) {
-        const row = 4 * canvas.width;
-        for (let x = 0; x < row; ++x) {
-          const ai = y * 4 * canvas.width + x;
-          const bi = (canvas.height - y - 1) * 4 * canvas.width + x;
-          const a = pixels[ai];
-          const b = pixels[bi];
-          pixels[ai] = b;
-          pixels[bi] = a;
-        }
-      }
-    }
-
-    gif.addFrame(new ImageData(pixels, canvas.width, canvas.height), {
-      delay: dt * 1000,
-      dispose: 2,
-    });
-
-    t += dt;
-  }
-
-  gif.render();
-
-  return gif;
-};
 
 const vertexAttribs = {
   meshPosition: 0,
@@ -131,7 +47,7 @@ const Index = () => {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  let gifRenderer: any;
+  const gifRenderer = useRef<any>();
 
   useEffect(() => {
     const canvas = document.createElement("canvas");
@@ -178,20 +94,20 @@ const Index = () => {
 
     setState("rendering");
 
-    if (gifRenderer?.running) {
-      gifRenderer.abort();
+    if (gifRenderer.current?.running) {
+      gifRenderer.current.abort();
     }
     const file = fileInputRef.current.files?.[0];
     const filename = file ? removeFileNameExt(file.name) : "result";
 
-    gifRenderer = renderGif(...renderData[currentFilterName]);
+    gifRenderer.current = renderGif(...renderData[currentFilterName]);
 
-    gifRenderer.on("finished", (blob: Blob) => {
+    gifRenderer.current.on("finished", (blob: Blob) => {
       setRenderedImage({
         name: `${filename}-${currentFilterName}.gif`,
         src: URL.createObjectURL(blob),
       });
-      gifRenderer.abort();
+      gifRenderer.current.abort();
       setState("rendered");
     });
   }, [currentFilterName]);
@@ -330,4 +246,77 @@ const Step = ({ step }: { step: number }) => {
       </Text>
     </Box>
   );
+};
+
+const removeFileNameExt = (fileName: string) => {
+  if (fileName.includes(".")) {
+    return fileName.split(".").slice(0, -1).join(".");
+  } else {
+    return fileName;
+  }
+};
+
+const renderGif = (
+  gl: WebGLRenderingContext,
+  canvas: HTMLCanvasElement,
+  program: Program
+) => {
+  //@ts-ignore
+  const gif = new window.GIF({
+    workers: 5,
+    quality: 10,
+    width: canvas.width,
+    height: canvas.height,
+    transparent: program.transparent,
+  });
+
+  const fps = 30;
+  const dt = 1.0 / fps;
+  const duration = program.duration;
+
+  let t = 0.0;
+  while (t <= duration) {
+    gl.uniform1f(program.timeUniform, t);
+    gl.uniform2f(program.resolutionUniform, canvas.width, canvas.height);
+    gl.clearColor(0.0, 1.0, 0.0, 1.0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.drawArrays(gl.TRIANGLES, 0, TRIANGLE_PAIR * TRIANGLE_VERTICIES);
+
+    const pixels = new Uint8ClampedArray(4 * canvas.width * canvas.height);
+    gl.readPixels(
+      0,
+      0,
+      canvas.width,
+      canvas.height,
+      gl.RGBA,
+      gl.UNSIGNED_BYTE,
+      pixels
+    );
+    // Flip the image vertically
+    {
+      const center = Math.floor(canvas.height / 2);
+      for (let y = 0; y < center; ++y) {
+        const row = 4 * canvas.width;
+        for (let x = 0; x < row; ++x) {
+          const ai = y * 4 * canvas.width + x;
+          const bi = (canvas.height - y - 1) * 4 * canvas.width + x;
+          const a = pixels[ai];
+          const b = pixels[bi];
+          pixels[ai] = b;
+          pixels[bi] = a;
+        }
+      }
+    }
+
+    gif.addFrame(new ImageData(pixels, canvas.width, canvas.height), {
+      delay: dt * 1000,
+      dispose: 2,
+    });
+
+    t += dt;
+  }
+
+  gif.render();
+
+  return gif;
 };

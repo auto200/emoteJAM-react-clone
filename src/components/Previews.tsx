@@ -1,7 +1,7 @@
 import { Flex, Text } from "@chakra-ui/layout";
 import { Dispatch, SetStateAction } from "react";
 import { Filters } from "../filters";
-import { Program, VertexAttribs } from "../pages";
+import { Program, VertexAttribs } from "../utils/interfaces";
 import Preview from "./Preview";
 
 interface Props {

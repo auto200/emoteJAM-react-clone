@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Filter } from "../filters";
-import { Program, VertexAttribs } from "../pages";
+import { Program, VertexAttribs } from "../utils/interfaces";
 import {
   IMAGE_SIZE,
   TRIANGLE_PAIR,
