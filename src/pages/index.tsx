@@ -195,16 +195,7 @@ const Index = () => {
     });
   }, [currentFilterName]);
 
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e?.target.files?.[0];
-    if (!file) return;
-    setState("initial");
-    setUploadedImageSrc(URL.createObjectURL(file));
-  };
-
-  const handleFileDrop = (e: DragEvent) => {
-    const file = e?.dataTransfer?.files?.[0];
-    if (!file) return;
+  const handleFileUpload = (file: File) => {
     setState("initial");
     setUploadedImageSrc(URL.createObjectURL(file));
   };
@@ -225,7 +216,12 @@ const Index = () => {
           webGlError
         ) : (
           <>
-            <DropZoneOverlay handleFileDrop={handleFileDrop} />
+            <DropZoneOverlay
+              handleFileDrop={(e: DragEvent) => {
+                const file = e?.dataTransfer?.files?.[0];
+                if (file) handleFileUpload(file);
+              }}
+            />
             <Heading my="50px">Upload an image to animate</Heading>
             <Flex
               w="90%"
@@ -251,7 +247,10 @@ const Index = () => {
                 ref={fileInputRef}
                 style={{ display: "none" }}
                 type="file"
-                onChange={handleFileChange}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                  const file = e?.target.files?.[0];
+                  if (file) handleFileUpload(file);
+                }}
               />
             </Flex>
             <Box pos="relative" w="90%">
