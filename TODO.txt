@@ -1,0 +1,5 @@
+Note that you cannot add more filters (or maby you can just add one). The reason
+is that each preview is separate canvas, with it's own webgl context and there is
+maximum limit of webgl contexts that you can create determinated by the browser.
+So the plan is to render all the previews in single canvas and have separate canvas
+designed to render the gif
