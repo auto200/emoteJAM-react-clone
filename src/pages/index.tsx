@@ -223,7 +223,9 @@ const Index = () => {
                 if (file) handleFileUpload(file);
               }}
             />
-            <Heading my="50px">Upload an image to animate</Heading>
+            <Heading mt="50px" mb="25px">
+              Upload an image to animate
+            </Heading>
             <Flex
               w="90%"
               h="150px"
@@ -254,7 +256,7 @@ const Index = () => {
                 }}
               />
             </Flex>
-            <Box pos="relative" w="90%">
+            <Box pos="relative" w="90%" m="15px">
               <Step step={2} />
               <Heading mt="15px" mb="5px">
                 Pick a filter:
@@ -278,22 +280,21 @@ const Index = () => {
               uploadedImageSrc={uploadedImageSrc}
             />
             <Divider m="10px" />
-            <Flex justifyContent="center" pos="relative" w="90%">
+            <Box pos="relative" w="90%" mb="15px">
               <Step step={3} />
-              <Flex
-                w={`${IMAGE_SIZE}px`}
-                h={`${IMAGE_SIZE}px`}
-                alignItems="center"
-                justifyContent="center"
-                flexDirection="column"
-                outline={state === "initial" ? "solid 2px red" : ""}
-              >
-                {state === "initial" && (
-                  <Box>☝️Pick a filter to get the gif</Box>
-                )}
-                {state === "rendering" && <Spinner size="lg" />}
-                {state === "rendered" && <Image src={renderedImage.src} />}
-              </Flex>
+              <Heading>Get animated gif</Heading>
+            </Box>
+            <Flex
+              w={`${IMAGE_SIZE}px`}
+              h={`${IMAGE_SIZE}px`}
+              alignItems="center"
+              justifyContent="center"
+              flexDirection="column"
+              outline={state === "initial" ? "solid 2px red" : ""}
+            >
+              {state === "initial" && <Box>☝️Pick a filter to get the gif</Box>}
+              {state === "rendering" && <Spinner size="lg" />}
+              {state === "rendered" && <Image src={renderedImage.src} />}
             </Flex>
             <Box m="15px" w="140px">
               <Button
