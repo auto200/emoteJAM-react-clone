@@ -8,6 +8,7 @@ import {
   Divider,
   Text,
   useToast,
+  Spinner,
 } from "@chakra-ui/react";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import DropZoneOverlay from "../components/DropZoneOverlay";
@@ -110,10 +111,10 @@ const vertexAttribs = {
 };
 
 const Index = () => {
-  const [state, setState] = useState<"idle" | "rendering" | "rendered">("idle");
-  const [currentFilterName, setCurrentFilterName] = useState<string>(
-    () => Object.keys(filters)[0]
+  const [state, setState] = useState<"initial" | "rendering" | "rendered">(
+    "initial"
   );
+  const [currentFilterName, setCurrentFilterName] = useState<string>("");
   const [webGlError, setWebGlError] = useState<string>("");
   const [uploadedImageSrc, setUploadedImageSrc] = useState<string>(
     "/imgs/tsodinClown.png"
@@ -162,15 +163,16 @@ const Index = () => {
   }, [uploadedImageSrc]);
 
   useEffect(() => {
-    if (state === "idle") {
+    if (state === "initial") {
       setRenderedImage({
         name: "",
         src: "",
       });
+      setCurrentFilterName("");
     }
   }, [state]);
 
-  const render = () => {
+  useEffect(() => {
     if (!renderData[currentFilterName] || !fileInputRef.current) return;
 
     setState("rendering");
@@ -191,19 +193,19 @@ const Index = () => {
       gifRenderer.abort();
       setState("rendered");
     });
-  };
+  }, [currentFilterName]);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e?.target.files?.[0];
     if (!file) return;
-    setState("idle");
+    setState("initial");
     setUploadedImageSrc(URL.createObjectURL(file));
   };
 
   const handleFileDrop = (e: DragEvent) => {
     const file = e?.dataTransfer?.files?.[0];
     if (!file) return;
-    setState("idle");
+    setState("initial");
     setUploadedImageSrc(URL.createObjectURL(file));
   };
 
@@ -271,7 +273,7 @@ const Index = () => {
               setRenderData={setRenderData}
               onClick={(filterName: string) => {
                 if (state === "rendered") {
-                  setState("idle");
+                  setState("initial");
                 }
                 setCurrentFilterName(filterName);
               }}
@@ -287,42 +289,30 @@ const Index = () => {
                 alignItems="center"
                 justifyContent="center"
                 flexDirection="column"
-                outline={state === "idle" ? "solid 2px red" : ""}
+                outline={state === "initial" ? "solid 2px red" : ""}
               >
-                {renderedImage.src ? (
-                  <Image src={renderedImage.src} />
-                ) : (
-                  <>
-                    <Box>Your rendered image will be here</Box>
-                    <Box>👇</Box>
-                  </>
+                {state === "initial" && (
+                  <Box>☝️Pick a filter to get the gif</Box>
                 )}
+                {state === "rendering" && <Spinner size="lg" />}
+                {state === "rendered" && <Image src={renderedImage.src} />}
               </Flex>
             </Flex>
             <Box m="15px" w="140px">
-              {state === "idle" || state === "rendering" ? (
-                <Button
-                  isLoading={state === "rendering"}
-                  loadingText="Rendering"
-                  spinnerPlacement="end"
-                  onClick={render}
-                  colorScheme="red"
-                  w="full"
-                >
-                  Render
-                </Button>
-              ) : (
-                <Button
-                  as={Link}
-                  href={renderedImage.src}
-                  download={renderedImage.name}
-                  colorScheme="teal"
-                  rightIcon={<DownloadIcon />}
-                  w="full"
-                >
-                  Download
-                </Button>
-              )}
+              <Button
+                as={Link}
+                isLoading={state === "rendering"}
+                isDisabled={state === "initial"}
+                loadingText="Rendering"
+                spinnerPlacement="end"
+                href={renderedImage.src}
+                download={renderedImage.name}
+                colorScheme="teal"
+                rightIcon={<DownloadIcon />}
+                w="full"
+              >
+                Download
+              </Button>
             </Box>
           </>
         )}
