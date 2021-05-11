@@ -212,22 +212,21 @@ const Index = () => {
               {state === "rendering" && <Spinner size="lg" />}
               {state === "rendered" && <Image src={renderedImage.src} />}
             </Flex>
-            <Box m="15px" w="140px">
-              <Button
-                as={Link}
-                isLoading={state === "rendering"}
-                isDisabled={state === "initial"}
-                loadingText="Rendering"
-                spinnerPlacement="end"
-                href={renderedImage.src}
-                download={renderedImage.name}
-                colorScheme="teal"
-                rightIcon={<DownloadIcon />}
-                w="full"
-              >
-                Download
-              </Button>
-            </Box>
+            <Button
+              w="140px"
+              m="15px"
+              as={Link}
+              isLoading={state === "rendering"}
+              isDisabled={state === "initial"}
+              loadingText="Rendering"
+              spinnerPlacement="end"
+              href={renderedImage.src}
+              download={renderedImage.name}
+              colorScheme="teal"
+              rightIcon={<DownloadIcon />}
+            >
+              Download
+            </Button>
           </>
         )}
         <Footer />
