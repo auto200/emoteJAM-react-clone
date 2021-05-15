@@ -9,6 +9,7 @@ import {
   Text,
   useToast,
   Spinner,
+  useColorMode,
 } from "@chakra-ui/react";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import DropZoneOverlay from "../components/DropZoneOverlay";
@@ -42,6 +43,8 @@ const Index = () => {
     name: string;
     src: string;
   }>({ name: "", src: "" });
+
+  const { colorMode, toggleColorMode } = useColorMode();
   const toast = useToast();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -49,6 +52,10 @@ const Index = () => {
   const gifRenderer = useRef<any>();
 
   useEffect(() => {
+    if (colorMode === "light") {
+      toggleColorMode();
+    }
+
     const canvas = document.createElement("canvas");
     const gl = canvas.getContext("webgl");
     if (!gl) {
