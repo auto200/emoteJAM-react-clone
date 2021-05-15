@@ -158,7 +158,7 @@ const Index = () => {
               w="90%"
               h="150px"
               border="5px dashed"
-              borderColor="slategray"
+              borderColor="limegreen"
               textAlign="center"
               justifyContent="center"
               alignItems="center"
