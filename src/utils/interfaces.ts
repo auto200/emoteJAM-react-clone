@@ -7,5 +7,4 @@ export interface Program {
   resolutionUniform: WebGLUniformLocation | null;
   timeUniform: WebGLUniformLocation | null;
   duration: number;
-  transparent: number | null;
 }

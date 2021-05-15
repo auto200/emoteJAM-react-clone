@@ -1,5 +1,4 @@
 export interface Filter {
-  transparent: number | null;
   duration: number;
   vertex: string;
   fragment: string;
@@ -11,7 +10,6 @@ export interface Filters {
 
 const filters: Filters = {
   Hop: {
-    transparent: 0x00ff00,
     duration: 0.85 * 2,
     vertex: `#version 100
 precision mediump float;
@@ -67,7 +65,6 @@ void main() {
 `,
   },
   Hopper: {
-    transparent: 0x00ff00,
     duration: 0.85,
     vertex: `#version 100
 precision mediump float;
@@ -123,7 +120,6 @@ void main() {
 `,
   },
   Overheat: {
-    transparent: 0x00ff00,
     duration: (0.85 / 8.0) * 2.0,
     vertex: `#version 100
 precision mediump float;
@@ -179,7 +175,6 @@ void main() {
 `,
   },
   Bounce: {
-    transparent: 0x00ff00,
     duration: Math.PI / 5.0,
     vertex: `#version 100
 precision mediump float;
@@ -218,7 +213,6 @@ void main() {
 `,
   },
   Circle: {
-    transparent: 0x00ff00,
     duration: Math.PI / 4.0,
     vertex: `#version 100
 precision mediump float;
@@ -270,7 +264,6 @@ void main() {
 `,
   },
   Slide: {
-    transparent: 0x00ff00,
     duration: 0.85 * 2,
     vertex: `#version 100
 precision mediump float;
@@ -326,7 +319,6 @@ void main() {
 `,
   },
   Laughing: {
-    transparent: 0x00ff00,
     duration: Math.PI / 12.0,
     vertex: `#version 100
 precision mediump float;
@@ -365,7 +357,6 @@ void main() {
 `,
   },
   Blob: {
-    transparent: 0x00ff00,
     duration: Math.PI / 3,
     vertex: `#version 100
 
@@ -407,7 +398,6 @@ void main() {
 `,
   },
   Go: {
-    transparent: 0x00ff00,
     duration: 1 / 4,
     vertex: `#version 100
 precision mediump float;
@@ -448,7 +438,6 @@ void main() {
 `,
   },
   Elevator: {
-    transparent: 0x00ff00,
     duration: 1 / 4,
     vertex: `#version 100
 precision mediump float;
@@ -491,7 +480,6 @@ void main() {
 `,
   },
   Rain: {
-    transparent: 0x00ff00,
     duration: 1,
     vertex: `#version 100
 precision mediump float;
@@ -535,7 +523,6 @@ void main() {
 `,
   },
   Pride: {
-    transparent: null,
     duration: 2.0,
     vertex: `#version 100
 precision mediump float;
@@ -581,7 +568,6 @@ void main() {
 `,
   },
   Hard: {
-    transparent: 0x00ff00,
     duration: (2.0 * Math.PI) / 32.0,
     vertex: `#version 100
 precision mediump float;
@@ -621,7 +607,6 @@ void main() {
 `,
   },
   Peek: {
-    transparent: 0x00ff00,
     duration: 2.0 * Math.PI,
     vertex: `#version 100
 precision mediump float;

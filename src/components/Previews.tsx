@@ -51,7 +51,9 @@ const Previews: React.FC<Props> = ({
             onClick={() => onClick(name)}
             _hover={{ cursor: "pointer" }}
           >
-            <Text mt="0">{name}</Text>
+            <Text mt="0" fontWeight="bold">
+              {name}
+            </Text>
             <Preview
               filter={filter}
               vertexAttribs={vertexAttribs}

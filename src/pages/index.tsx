@@ -28,9 +28,8 @@ const vertexAttribs = {
 };
 
 const Index = () => {
-  const [state, setState] = useState<"initial" | "rendering" | "rendered">(
-    "initial"
-  );
+  const [state, setState] =
+    useState<"initial" | "rendering" | "rendered">("initial");
   const [currentFilterName, setCurrentFilterName] = useState<string>("");
   const [webGlError, setWebGlError] = useState<string>("");
   const [uploadedImageSrc, setUploadedImageSrc] = useState<string>(
@@ -51,10 +50,7 @@ const Index = () => {
 
   useEffect(() => {
     const canvas = document.createElement("canvas");
-    const gl = canvas.getContext("webgl", {
-      antialias: false,
-      alpha: false,
-    });
+    const gl = canvas.getContext("webgl");
     if (!gl) {
       setWebGlError("Could not initialize WebGL context");
       return;
@@ -89,6 +85,7 @@ const Index = () => {
     }
   }, [state]);
 
+  // auto render image on filter change
   useEffect(() => {
     if (!renderData[currentFilterName] || !fileInputRef.current) return;
 
@@ -103,6 +100,10 @@ const Index = () => {
     gifRenderer.current = renderGif(...renderData[currentFilterName]);
 
     gifRenderer.current.on("finished", (blob: Blob) => {
+      if (renderedImage.src) {
+        URL.revokeObjectURL(renderedImage.src);
+      }
+
       setRenderedImage({
         name: `${filename}-${currentFilterName}.gif`,
         src: URL.createObjectURL(blob),
@@ -113,6 +114,10 @@ const Index = () => {
   }, [currentFilterName]);
 
   const handleFileUpload = (file: File) => {
+    if (renderedImage.src) {
+      URL.revokeObjectURL(renderedImage.src);
+    }
+
     setState("initial");
     setUploadedImageSrc(URL.createObjectURL(file));
   };
@@ -177,13 +182,6 @@ const Index = () => {
               <Heading mt="15px" mb="5px">
                 Pick a filter:
               </Heading>
-              <Text>
-                (
-                <Text as="span" color="#0f0">
-                  Green
-                </Text>{" "}
-                background will be gone after render)
-              </Text>
             </Box>
             <Previews
               filters={filters}
@@ -195,10 +193,10 @@ const Index = () => {
               vertexAttribs={vertexAttribs}
               uploadedImageSrc={uploadedImageSrc}
             />
-            <Divider m="10px" />
-            <Box pos="relative" w="90%" mb="15px">
+            <Divider m="10px" mb="0" />
+            <Box pos="relative" w="90%" mb="15px" pt="10px">
               <Step step={3} />
-              <Heading>Get animated gif</Heading>
+              <Heading mt="10px">Get animated gif</Heading>
             </Box>
             <Flex
               w={`${IMAGE_SIZE}px`}
@@ -266,7 +264,7 @@ const renderGif = (
     quality: 10,
     width: canvas.width,
     height: canvas.height,
-    transparent: program.transparent,
+    transparent: "rgba(0, 0, 0, 0)",
   });
 
   const fps = 30;
@@ -277,7 +275,7 @@ const renderGif = (
   while (t <= duration) {
     gl.uniform1f(program.timeUniform, t);
     gl.uniform2f(program.resolutionUniform, canvas.width, canvas.height);
-    gl.clearColor(0.0, 1.0, 0.0, 1.0);
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
     gl.drawArrays(gl.TRIANGLES, 0, TRIANGLE_PAIR * TRIANGLE_VERTICIES);
 

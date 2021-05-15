@@ -39,7 +39,6 @@ function loadFilterProgram(
     resolutionUniform: gl.getUniformLocation(id, "resolution"),
     timeUniform: gl.getUniformLocation(id, "time"),
     duration: filter.duration,
-    transparent: filter.transparent,
   };
 }
 
@@ -104,7 +103,7 @@ function createTextureFromImage(
   gl: WebGLRenderingContext,
   image: TexImageSource
 ) {
-  let textureId = gl.createTexture();
+  const textureId = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, textureId);
   gl.texImage2D(
     gl.TEXTURE_2D, // target
@@ -148,7 +147,6 @@ const Preview: React.FC<Props> = ({
   useEffect(() => {
     const gl = canvasRef.current?.getContext("webgl", {
       antialias: false,
-      alpha: false,
     });
     if (!gl) {
       return;
@@ -207,7 +205,7 @@ const Preview: React.FC<Props> = ({
         canvasRef.current.height
       );
 
-      gl.clearColor(0.0, 1.0, 0.0, 1.0);
+      gl.clearColor(0.0, 0.0, 0.0, 0.0);
       gl.clear(gl.COLOR_BUFFER_BIT);
 
       gl.drawArrays(gl.TRIANGLES, 0, TRIANGLE_PAIR * TRIANGLE_VERTICIES);

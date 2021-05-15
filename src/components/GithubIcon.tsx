@@ -6,10 +6,11 @@ const GithubLink = () => {
     <Link
       isExternal
       href="https://github.com/auto200/emoteJAM-react-clone"
-      pos="fixed"
+      pos={["absolute", null, "fixed"]}
       top="8px"
       right="8px"
       fontSize="4xl"
+      zIndex="10"
     >
       <GoMarkGithub />
     </Link>
