@@ -28,6 +28,11 @@ const vertexAttribs = {
   meshPosition: 0,
 };
 
+interface RenderedGif {
+  name: string;
+  src: string;
+}
+
 const Index = () => {
   const [state, setState] =
     useState<"initial" | "rendering" | "rendered">("initial");
@@ -39,10 +44,10 @@ const Index = () => {
   const [renderData, setRenderData] = useState<{
     [key: string]: [WebGLRenderingContext, HTMLCanvasElement, Program];
   }>({});
-  const [renderedImage, setRenderedImage] = useState<{
-    name: string;
-    src: string;
-  }>({ name: "", src: "" });
+  const [renderedGif, setRenderedGif] = useState<RenderedGif>({
+    name: "",
+    src: "",
+  });
 
   const { colorMode, toggleColorMode } = useColorMode();
   const toast = useToast();
@@ -50,6 +55,7 @@ const Index = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const gifRenderer = useRef<any>();
+  const renderedGifsCacheRef = useRef<{ [key: string]: RenderedGif }>({});
 
   useEffect(() => {
     if (colorMode === "light") {
@@ -67,6 +73,14 @@ const Index = () => {
   useEffect(() => {
     if (!uploadedImageSrc) return;
 
+    //clear cache
+    {
+      Object.values(renderedGifsCacheRef.current).map(({ src }) =>
+        URL.revokeObjectURL(src)
+      );
+      renderedGifsCacheRef.current = {};
+    }
+
     const image = new window.Image();
     image.src = uploadedImageSrc;
 
@@ -82,19 +96,15 @@ const Index = () => {
     });
   }, [uploadedImageSrc]);
 
-  useEffect(() => {
-    if (state === "initial") {
-      setRenderedImage({
-        name: "",
-        src: "",
-      });
-      setCurrentFilterName("");
-    }
-  }, [state]);
-
   // auto render image on filter change
   useEffect(() => {
     if (!renderData[currentFilterName] || !fileInputRef.current) return;
+
+    const cachedGif = renderedGifsCacheRef.current[currentFilterName];
+    setRenderedGif(cachedGif);
+    if (cachedGif) {
+      return;
+    }
 
     setState("rendering");
 
@@ -107,26 +117,25 @@ const Index = () => {
     gifRenderer.current = renderGif(...renderData[currentFilterName]);
 
     gifRenderer.current.on("finished", (blob: Blob) => {
-      if (renderedImage.src) {
-        URL.revokeObjectURL(renderedImage.src);
-      }
-
-      setRenderedImage({
+      const renderedGif = {
         name: `${filename}-${currentFilterName}.gif`,
         src: URL.createObjectURL(blob),
-      });
+      };
+      renderedGifsCacheRef.current[currentFilterName] = renderedGif;
+      setRenderedGif(renderedGif);
       gifRenderer.current.abort();
       setState("rendered");
     });
   }, [currentFilterName]);
 
   const handleFileUpload = (file: File) => {
-    if (renderedImage.src) {
-      URL.revokeObjectURL(renderedImage.src);
-    }
-
     setState("initial");
     setUploadedImageSrc(URL.createObjectURL(file));
+    setRenderedGif({
+      name: "",
+      src: "",
+    });
+    setCurrentFilterName("");
   };
 
   return (
@@ -147,7 +156,7 @@ const Index = () => {
           <>
             <DropZoneOverlay
               handleFileDrop={(e: DragEvent) => {
-                const file = e?.dataTransfer?.files?.[0];
+                const file = e.dataTransfer?.files?.[0];
                 if (file) handleFileUpload(file);
               }}
             />
@@ -156,7 +165,7 @@ const Index = () => {
             </Heading>
             <Flex
               w="90%"
-              h="150px"
+              h="175px"
               border="5px dashed"
               borderColor="limegreen"
               textAlign="center"
@@ -179,7 +188,7 @@ const Index = () => {
                 style={{ display: "none" }}
                 type="file"
                 onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                  const file = e?.target.files?.[0];
+                  const file = e.target.files?.[0];
                   if (file) handleFileUpload(file);
                 }}
               />
@@ -215,7 +224,7 @@ const Index = () => {
             >
               {state === "initial" && <Box>☝️Pick a filter to get the gif</Box>}
               {state === "rendering" && <Spinner size="lg" />}
-              {state === "rendered" && <Image src={renderedImage.src} />}
+              {state === "rendered" && <Image src={renderedGif.src} />}
             </Flex>
             <Button
               w="140px"
@@ -225,8 +234,8 @@ const Index = () => {
               isDisabled={state === "initial"}
               loadingText="Rendering"
               spinnerPlacement="end"
-              href={renderedImage.src}
-              download={renderedImage.name}
+              href={renderedGif.src}
+              download={renderedGif.name}
               colorScheme="teal"
               rightIcon={<DownloadIcon />}
             >
