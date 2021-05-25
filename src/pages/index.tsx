@@ -101,8 +101,8 @@ const Index = () => {
     if (!renderData[currentFilterName] || !fileInputRef.current) return;
 
     const cachedGif = renderedGifsCacheRef.current[currentFilterName];
-    setRenderedGif(cachedGif);
     if (cachedGif) {
+      setRenderedGif(cachedGif);
       return;
     }
 
@@ -160,12 +160,20 @@ const Index = () => {
                 if (file) handleFileUpload(file);
               }}
             />
-            <Heading mt="50px" mb="25px">
+            <Heading mt="50px" mb="5px">
               Upload an image to animate
             </Heading>
+            <Text>
+              Fully{" "}
+              <Text as="span" fontWeight="bold" background="black" px="3px">
+                Black
+              </Text>{" "}
+              color not is supported and will be not visible on rendered gif
+            </Text>
             <Flex
               w="90%"
               h="175px"
+              mt="25px"
               border="5px dashed"
               borderColor="limegreen"
               textAlign="center"
