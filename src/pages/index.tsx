@@ -166,9 +166,9 @@ const Index = () => {
             <Text>
               Fully{" "}
               <Text as="span" fontWeight="bold" background="black" px="3px">
-                Black
+                Black (#000000)
               </Text>{" "}
-              color not is supported and will be not visible on rendered gif
+              color is not supported and will become tansparent on rendered gif
             </Text>
             <Flex
               w="90%"
