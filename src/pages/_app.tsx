@@ -1,8 +1,7 @@
 import { ChakraProvider } from "@chakra-ui/react";
-import Head from "next/head";
-
-import theme from "../theme";
 import { AppProps } from "next/app";
+import Head from "next/head";
+import theme from "../theme";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -10,7 +9,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       <Head>
         <title>emoteJAM-react-clone</title>
       </Head>
-      <ChakraProvider resetCSS theme={theme}>
+      <ChakraProvider theme={theme}>
         <Component {...pageProps} />
       </ChakraProvider>
     </>
