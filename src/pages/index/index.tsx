@@ -13,8 +13,8 @@ import DropZoneOverlay from "../../components/DropZoneOverlay";
 import Footer from "../../components/Footer";
 import GithubLink from "../../components/GithubIcon";
 import { Step1, Step2, Step3 } from "../../components/Steps";
-import kekwFavicon from "../../kekwFavicon";
 import { AppState, RenderData } from "../../utils/interfaces";
+import kekwFavicon from "../../utils/kekwFavicon";
 import { removeFileNameExt, renderGif } from "./utils";
 const Favicon = require("react-favicon");
 

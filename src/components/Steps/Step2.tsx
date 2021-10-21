@@ -1,7 +1,7 @@
 import { Box, Heading } from "@chakra-ui/react";
 import React, { Dispatch, SetStateAction } from "react";
-import { vertexAttribs } from "../../constants";
-import filters from "../../filters";
+import { vertexAttribs } from "../../utils/constants";
+import filters from "../../utils/filters";
 import { RenderData } from "../../utils/interfaces";
 import Previews from "../Previews";
 import StepIndicator from "./shared/StepIndicator";

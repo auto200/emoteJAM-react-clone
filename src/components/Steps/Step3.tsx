@@ -1,6 +1,6 @@
 import { Box, Flex, Heading, Image, Spinner } from "@chakra-ui/react";
 import React from "react";
-import { IMAGE_SIZE } from "../../constants";
+import { IMAGE_SIZE } from "../../utils/constants";
 import { AppState } from "../../utils/interfaces";
 import StepIndicator from "./shared/StepIndicator";
 

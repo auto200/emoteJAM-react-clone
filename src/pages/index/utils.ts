@@ -1,4 +1,4 @@
-import { TRIANGLE_PAIR, TRIANGLE_VERTICIES } from "../../constants";
+import { TRIANGLE_PAIR, TRIANGLE_VERTICIES } from "../../utils/constants";
 import { Program } from "../../utils/interfaces";
 
 export const removeFileNameExt = (fileName: string) => {
