@@ -8,8 +8,11 @@ This is a clone of [Tsoding's emoteJAM](https://github.com/tsoding/emoteJAM). He
 
 # Scripts
 
+install:
+`yarn install`
+
 develop:
-`npm run dev`
+`yarn dev`
 
 build & export:
-`npm run export`
+`yarn export`

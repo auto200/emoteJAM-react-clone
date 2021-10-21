@@ -26,7 +26,9 @@ const Step3: React.FC<Step3Props> = ({ appState, renderedImageSrc }) => {
       >
         {appState === "initial" && <Box>☝️Pick a filter to get the gif</Box>}
         {appState === "rendering" && <Spinner size="lg" />}
-        {appState === "rendered" && <Image src={renderedImageSrc} />}
+        {appState === "rendered" && (
+          <Image src={renderedImageSrc} alt="rendered gif" />
+        )}
       </Flex>
     </>
   );
