@@ -2,7 +2,7 @@
 
 Website 👉 https://emotejam.auto200.eu/
 
-This is a rip off of [Tsoding's emoteJAM](https://github.com/tsoding/emoteJAM). He done all the webgl work that i understand none of, kudos.
+This is a clone of [Tsoding's emoteJAM](https://github.com/tsoding/emoteJAM). He done all the webgl work.
 
 <img src="filters.gif" alt="filters">
 
