@@ -8,7 +8,7 @@ const Footer = () => {
         href="https://github.com/tsoding/emoteJAM"
         fontSize="xx-small"
       >
-        Check out Tsoding's original version of the app
+        Check out Tsoding&apos;s original version of the app
       </Link>
     </Flex>
   );

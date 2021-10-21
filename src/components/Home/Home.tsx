@@ -9,21 +9,21 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
-import DropZoneOverlay from "../../components/DropZoneOverlay";
-import Footer from "../../components/Footer";
-import GithubLink from "../../components/GithubIcon";
-import { Step1, Step2, Step3 } from "../../components/Steps";
+import Favicon from "react-favicon";
 import { AppState, RenderData } from "../../utils/interfaces";
 import kekwFavicon from "../../utils/kekwFavicon";
+import DropZoneOverlay from "../DropZoneOverlay";
+import Footer from "../Footer";
+import GithubLink from "../GithubIcon";
+import { Step1, Step2, Step3 } from "../Steps";
 import { removeFileNameExt, renderGif } from "./utils";
-const Favicon = require("react-favicon");
 
 interface RenderedGif {
   name: string;
   src: string;
 }
 
-const Index = () => {
+const Home = () => {
   const [appState, setAppState] = useState<AppState>("initial");
   const [selectedFilterName, setSelectedFilterName] = useState<string>("");
   const [webGlError, setWebGlError] = useState<string>("");
@@ -121,7 +121,7 @@ const Index = () => {
 
   return (
     <Flex justifyContent="center">
-      <Favicon url={kekwFavicon} animate animationDelay={50} />
+      <Favicon url={kekwFavicon} animationDelay={50} />
       <GithubLink />
       <Flex
         maxW="800px"
@@ -186,4 +186,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default Home;
