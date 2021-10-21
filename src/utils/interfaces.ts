@@ -8,3 +8,9 @@ export interface Program {
   timeUniform: WebGLUniformLocation | null;
   duration: number;
 }
+
+export interface RenderData {
+  [key: string]: [WebGLRenderingContext, HTMLCanvasElement, Program];
+}
+
+export type AppState = "initial" | "rendering" | "rendered";

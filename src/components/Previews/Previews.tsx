@@ -1,17 +1,13 @@
 import { Flex, Text } from "@chakra-ui/layout";
 import { Dispatch, SetStateAction } from "react";
-import { Filters } from "../filters";
-import { Program, VertexAttribs } from "../utils/interfaces";
+import { Filters } from "../../utils/filters";
+import { Program, RenderData, VertexAttribs } from "../../utils/interfaces";
 import Preview from "./Preview";
 
 interface Props {
   filters: Filters;
-  currentFilterName: string;
-  setRenderData: Dispatch<
-    SetStateAction<{
-      [key: string]: [WebGLRenderingContext, HTMLCanvasElement, Program];
-    }>
-  >;
+  selectedFilterName: string;
+  setRenderData: Dispatch<SetStateAction<RenderData>>;
   onClick: (filterName: string) => void;
   vertexAttribs: VertexAttribs;
   uploadedImageSrc: string;
@@ -19,7 +15,7 @@ interface Props {
 
 const Previews: React.FC<Props> = ({
   filters,
-  currentFilterName,
+  selectedFilterName,
   onClick,
   setRenderData,
   vertexAttribs,
@@ -46,8 +42,8 @@ const Previews: React.FC<Props> = ({
             m="15px"
             p="20px"
             pt="5px"
-            outline={currentFilterName === name ? "4px solid" : "1px solid"}
-            outlineColor={currentFilterName === name ? "gray.100" : "gray.700"}
+            outline={selectedFilterName === name ? "4px solid" : "1px solid"}
+            outlineColor={selectedFilterName === name ? "gray.100" : "gray.700"}
             onClick={() => onClick(name)}
             _hover={{ cursor: "pointer" }}
           >
