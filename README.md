@@ -4,6 +4,8 @@ Website 👉 https://emotejam.auto200.eu/
 
 This is a clone of [Tsoding's emoteJAM](https://github.com/tsoding/emoteJAM). He done all the webgl work.
 
+Select an image, apply filer and download animated GIF.
+
 <img src="filters.gif" alt="filters">
 
 # Scripts
